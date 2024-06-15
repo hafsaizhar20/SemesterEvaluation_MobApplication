@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40383700190",
+    "project_id": "semesterplanner-eaf8f",
+    "storage_bucket": "semesterplanner-eaf8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40383700190:android:738776a59637a1c383f64f",
+        "android_client_info": {
+          "package_name": "com.example.home"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxI4ZhpebdK_SV6uLDeX0HYX1sZdPNoVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
