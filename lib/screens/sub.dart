@@ -10,7 +10,7 @@ import 'package:home/screens/view.dart';
 import 'package:home/screens/addition.dart';
 
 class sub extends StatefulWidget {
-    final UserModel  ;
+    final UserModel  userData;
     sub({super.key, required    this.userData } );
 
   @override
