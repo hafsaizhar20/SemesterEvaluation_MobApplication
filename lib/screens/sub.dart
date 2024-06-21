@@ -1,18 +1,49 @@
 
+import 'dart:developer';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:home/view.dart';
-import 'package:home/addition.dart';
+import 'package:home/model/user_model.dart';
+import 'package:home/screens/loginSc.dart';
+import 'package:home/screens/user_profile.dart';
+import 'package:home/screens/view.dart';
+import 'package:home/screens/addition.dart';
 
 class sub extends StatefulWidget {
-  const sub({super.key});
+    final UserModel  ;
+    sub({super.key, required    this.userData } );
 
   @override
   State<sub> createState() => _subState();
 }
 
 class _subState extends State<sub> {
+
+     UserModel? user ;
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  void fetchUserData() {
+    final databaseRef = FirebaseDatabase.instance.ref("users");
+
+    databaseRef.child(userId).once().then((DatabaseEvent event) {
+      final userData = Map<String, dynamic>.from(event.snapshot.value as Map);
+      setState(() {
+        user = UserModel(map: userData);
+      });
+    }).catchError((error) {
+      log("Failed to fetch user data: $error");
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -40,8 +71,8 @@ class _subState extends State<sub> {
                 // currentAccountPicture: CircleAvatar(
                 //   backgroundImage: NetworkImage(url),
                 // ),
-                accountName: const Text('Nawaira Sajjad'),
-                accountEmail: const Text('nawairasajjad97@gmail.com')),
+                accountName:   Text(user!.name),
+                accountEmail:   Text(user!.email)),
             ListTile(
               leading: const Icon(Icons.add),
               title: const Text('Add Course'),
@@ -68,9 +99,21 @@ class _subState extends State<sub> {
               onTap: (){},
             ),
             ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('User Profile'),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(userData: user!,)));
+
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
-              onTap: (){},
+              onTap: (){
+                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => login()), (Route<dynamic> route) =>
+              false,);
+
+              },
             )
 
             // Text(data)

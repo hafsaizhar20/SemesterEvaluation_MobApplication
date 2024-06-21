@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:home/sub.dart';
+import 'package:home/helpers/loader.dart';
+import 'package:home/screens/loginSc.dart';
+import 'package:home/screens/sub.dart';
 import 'package:home/utils/utilities.dart';
 
 class addCourse extends StatelessWidget {
@@ -21,8 +23,9 @@ class addCourse extends StatelessWidget {
             backgroundColor: Colors.indigo.shade900,
             leading: IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => sub()));
+
+Navigator.pop(context);                  // Navigator.push(
+                  //     context, MaterialPageRoute(builder: (context) => sub()));
                 },
                 icon: const Icon(
                   Icons.backspace_rounded,
@@ -124,24 +127,29 @@ class addCourse extends StatelessWidget {
                   InkWell( onTap: () {
 
                     if (_formKey.currentState!.validate()) {
+                      showLoader(context);
+
                     // / Generate a unique key using the current timestamp in milliseconds
                     // final String uniqueKey = DateTime.now().millisecondsSinceEpoch.toString();
 
                     // Add the course to the database
-                  //  databaseRef.child(uniqueKey).set({
+                   //  databaseRef.child(uniqueKey).set({
                     //'courseCode': courseCode.text.toString(),
                     //'courseName': courseName.text.toString(),
                     //}
 
-                      //
                       databaseRef.child(courseCode.text.toString()).set({
                         'courseCode': courseCode.text.toString(),
                         'courseName': courseName.text.toString(),
+                        'uid': userId.toString(),
 
                       }
                       ).then((value){
+                        hideLoader(context);
                         utilities().toastMessages('Course added successfully');
                       }).onError((error, stackTrace) {
+                        hideLoader(context);
+
                         utilities().toastMessages(error.toString());
                       }
                       );

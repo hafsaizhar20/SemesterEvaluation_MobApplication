@@ -612,6 +612,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:home/helpers/loader.dart';
+import 'package:home/utils/utilities.dart';
 
 class AddQuiz extends StatelessWidget {
   final String courseCode;
@@ -644,6 +646,12 @@ class AddQuizScreen extends StatelessWidget {
     DatabaseReference quizzesRef = FirebaseDatabase.instance.ref('Courses/$courseCode/quizzes');
     return Scaffold(
       appBar: AppBar(
+
+leading: GestureDetector(
+  onTap: () {
+    Navigator.pop(context);
+  },
+  child: Icon(Icons.arrow_back)),
         centerTitle: true,
         title: const Text('Add Quiz'),
       ),
@@ -664,10 +672,14 @@ class AddQuizScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: InkWell(
-        onTap: () {
+        onTap: (){
           quizzesRef.push().set({
             'topic': topicController.text,
             'date': dateController.text,
+          }).whenComplete((){
+            utilities().toastMessages("Quiz added!");
+            topicController.clear();
+            dateController.clear();
           });
         },
         child: Padding(

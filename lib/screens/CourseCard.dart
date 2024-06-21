@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:home/QuizScreen.dart';
+import 'package:home/model/course_model.dart';
+import 'package:home/screens/QuizScreen.dart';
 
 class CourseCard extends StatefulWidget {
-  final String courseid;
-  final String course;
-  final String courseCode;
+ final CourseModel course;
   const CourseCard(
       {super.key,
-      required this.courseid,
-      required this.course,
-      required this.courseCode});
+       required this.course,
+     });
 
   @override
   State<CourseCard> createState() => _CourseCardState();
@@ -32,7 +30,7 @@ class _CourseCardState extends State<CourseCard> {
         child: Column(
           children: [
             ListTile(
-              title: Text('${widget.courseid + "          "} ${widget.course}'),
+              title: Text('${widget.course.courseCode.toString() + "          "} ${widget.course}'),
               trailing: Icon(
                 _isDropdownVisible
                     ? Icons.arrow_drop_up
@@ -49,7 +47,7 @@ class _CourseCardState extends State<CourseCard> {
                     onTap: () {
                       // Handle Quiz tap
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => QuizScreen(courseCode: 'courseCode')));
+                          builder: (context) => QuizScreen(course: widget.course)));
                     },
                   ),
                   ListTile(

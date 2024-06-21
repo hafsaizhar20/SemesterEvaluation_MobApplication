@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home/dbClasses.dart';
-import 'package:home/loginSc.dart';
-import 'package:home/sub.dart';
+import 'package:home/screens/dbClasses.dart';
+import 'package:home/screens/loginSc.dart';
+import 'package:home/screens/sub.dart';
 import 'package:home/utils/utilities.dart';
 
 class register extends StatefulWidget {
@@ -23,6 +24,7 @@ class _registerState extends State<register> {
   final password = TextEditingController();
 
   FirebaseAuth _auth = FirebaseAuth.instance;
+  final databaseRef = FirebaseDatabase.instance.ref("users");
 
   void dispose() {
     super.dispose();
@@ -232,8 +234,18 @@ class _registerState extends State<register> {
                         });
                         _auth
                             .createUserWithEmailAndPassword(
+
                                 email: email.text.toString(),
-                                password: password.text.toString())
+                                password: password.text.toString()).then((UserCredential userCredential){
+                                  String uid = userCredential.user!.uid;
+                                    databaseRef.child(uid).set({
+                        'email': email.text.toString(),
+                        'name': name.text.toString(),
+                        'phone': phone.text.toString(),
+                        'photoUrl':""
+
+                      });
+                                })
                             .then((value) {
                           setState(() {
                             loading = false;

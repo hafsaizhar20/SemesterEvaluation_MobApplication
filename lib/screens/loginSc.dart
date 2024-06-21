@@ -1,9 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home/register.dart';
-import 'package:home/sub.dart';
+import 'package:home/helpers/loader.dart';
+import 'package:home/model/user_model.dart';
+import 'package:home/screens/register.dart';
+import 'package:home/screens/sub.dart';
 import 'package:home/utils/utilities.dart';
+
+String userId = '';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -20,34 +25,65 @@ class _loginState extends State<login> {
   final passwordController = TextEditingController();
 
   FirebaseAuth _auth = FirebaseAuth.instance;
+  final databaseRef = FirebaseDatabase.instance.ref("users");
 
+  @override
   void dispose() {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
   }
 
-  void login() {
-    setState(() {
-      loading = true;
-    });
-    _auth
-        .signInWithEmailAndPassword(
-            email: emailController.text.toString(),
-            password: passwordController.text.toString())
-        .then((value) {
-      utilities().toastMessages(value.user!.email.toString());
-      Navigator.push(context, MaterialPageRoute(builder: (context) => sub()));
+  void login(BuildContext context) {
+    showLoader(context);
+  setState(() {
+    loading = true;
+  });
+  _auth
+      .signInWithEmailAndPassword(
+          email: emailController.text.toString(),
+          password: passwordController.text.toString())
+      .then((value) {
+    userId = value.user!.uid;  // Get the user ID
+
+    // Retrieve user data from the database
+    databaseRef.child(userId).once().then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        final userData = Map<String, dynamic>.from(event.snapshot.value as Map);
+         final UserModel user = UserModel(map: userData);
+        hideLoader(context);
+        utilities().toastMessages('Welcome ${user.name}');
+
+        // Navigate to the next screen with user data
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => sub(userData: user)));
+      } else {
+        hideLoader(context);
+
+        utilities().toastMessages('User data not found.');
+      }
       setState(() {
         loading = false;
       });
-    }).onError((error, stackTrace) {
+    }).catchError((error) {
+        hideLoader(context);
+
       utilities().toastMessages(error.toString());
       setState(() {
         loading = false;
       });
     });
-  }
+  }).onError((error, stackTrace) {
+        hideLoader(context);
+
+    utilities().toastMessages(error.toString());
+    setState(() {
+      loading = false;
+    });
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +226,7 @@ class _loginState extends State<login> {
                     InkWell(
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          login();
+                          login(context);
                         }
                       },
                       child: Container(
